@@ -1,0 +1,77 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <.header class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Listing Quotes</h1>
+    <:actions>
+      <.link patch={~p"/quotes/new"}>
+        <.button class="bg-indigo-600 hover:bg-indigo-700">New Quote</.button>
+      </.link>
+    </:actions>
+  </.header>
+
+ <div class="mb-8">
+  <.simple_form :let={f} for={%{}} as={:filter} phx-change="filter" class="flex items-end space-x-4">
+    <.input field={f[:author]} type="text" label="Filter by author" class="flex-grow" />
+    <.button type="submit" class="bg-gray-200 text-gray-800 hover:bg-gray-300">Filter</.button>
+  </.simple_form>
+</div>
+
+<table id="quotes" class="min-w-full border border-gray-300">
+  <thead class="bg-gray-200">
+    <tr>
+      <th class="px-4 py-2 border-b cursor-pointer" phx-click="sort" phx-value-field="author">
+        <span class="font-semibold">Author</span>
+        <span class="text-gray-500 text-sm">
+          <%= if @sort.field == "author" do %>
+            <%= if @sort.order == "asc", do: " ↑", else: " ↓" %>
+          <% end %>
+        </span>
+      </th>
+      <th class="px-4 py-2 border-b cursor-pointer" phx-click="sort" phx-value-field="content">
+        <span class="font-semibold">Content</span>
+        <span class="text-gray-500 text-sm">
+          <%= if @sort.field == "content" do %>
+            <%= if @sort.order == "asc", do: " ↑", else: " ↓" %>
+          <% end %>
+        </span>
+      </th>
+      <th class="px-4 py-2 border-b cursor-pointer" phx-click="sort" phx-value-field="publisher">
+        <span class="font-semibold">Publisher</span>
+        <span class="text-gray-500 text-sm">
+          <%= if @sort.field == "publisher" do %>
+            <%= if @sort.order == "asc", do: " ↑", else: " ↓" %>
+          <% end %>
+        </span>
+      </th>
+      <th class="px-4 py-2 border-b cursor-pointer" phx-click="sort" phx-value-field="year">
+        <span class="font-semibold">Year</span>
+        <span class="text-gray-500 text-sm">
+          <%= if @sort.field == "year" do %>
+            <%= if @sort.order == "asc", do: " ↑", else: " ↓" %>
+          <% end %>
+        </span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for quote <- @quotes do %>
+      <tr class="hover:bg-gray-100">
+        <td class="px-4 py-2 border-b"><%= quote.author %></td>
+        <td class="px-4 py-2 border-b"><%= quote.content %></td>
+        <td class="px-4 py-2 border-b"><%= quote.publisher %></td>
+        <td class="px-4 py-2 border-b"><%= quote.year %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+  <.modal :if={@live_action in [:new, :edit]} id="quote-modal" show on_cancel={JS.patch(~p"/quotes")}>
+    <.live_component
+      module={MathesisWeb.QuoteLive.FormComponent}
+      id={@quote.id || :new}
+      title={@page_title}
+      action={@live_action}
+      quote={@quote}
+      patch={~p"/quotes"}
+    />
+  </.modal>
+</div>
